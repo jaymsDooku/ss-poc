@@ -4,7 +4,7 @@ public class ContentTypes {
 
 	public static final String RELATIONSHIPS = "application/vnd.openxmlformats-package.relationships+xml";
 	
-	public static final String CORE = "application/vnd.openxmlformats-officedocument.core-properties+xml";
+	public static final String CORE = "application/vnd.openxmlformats-package.core-properties+xml";
 	
 	public static final String APP = "application/vnd.openxmlformats-officedocument.extended-properties+xml";
 	

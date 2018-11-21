@@ -1,18 +1,15 @@
 package io.jayms.xlsx;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+import io.jayms.xlsx.model.Row;
+import io.jayms.xlsx.model.Save;
+import io.jayms.xlsx.model.Workbook;
+import io.jayms.xlsx.model.Worksheet;
 
 public class Main {
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		File file = new File("exampleXML.xlsx");
 		if (!file.exists()) {
 			try {
@@ -20,7 +17,7 @@ public class Main {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		
 		/*DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
@@ -45,7 +42,7 @@ public class Main {
 			e.printStackTrace();
 		}*/
 		
-		XMLOutputFactory factory = XMLOutputFactory.newInstance();
+		/*XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		try {
 			ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
 			XMLStreamWriter writer = factory.createXMLStreamWriter(zos, "UTF-8");
@@ -276,9 +273,9 @@ public class Main {
 			
 			writer.writeEndElement();
 			writer.writeEndDocument();
-			zos.closeEntry();
+			zos.closeEntry();*/
 			
-			zos.putNextEntry(new ZipEntry("xl/styles.xml"));
+			/*zos.putNextEntry(new ZipEntry("xl/styles.xml"));
 			writer.writeStartDocument("UTF-8", "1.0");
 			writer.writeStartElement("styleSheet");
 			writer.writeAttribute("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
@@ -443,6 +440,106 @@ public class Main {
 			
 			writer.writeEndElement();
 			writer.writeEndDocument();
+			zos.closeEntry();*/
+			
+			/*zos.putNextEntry(new ZipEntry("xl/styles.xml"));
+			writer.writeStartDocument("UTF-8", "1.0");
+			writer.writeStartElement("styleSheet");
+			writer.writeAttribute("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+			
+			writer.writeStartElement("numFmts");
+			writer.writeAttribute("count", "1");
+			writer.writeStartElement("numFmt");
+			writer.writeAttribute("formatCode", "General");
+			writer.writeAttribute("numFmtId", "164");
+			writer.writeEndElement();
+			writer.writeEndElement();
+			
+			writer.writeStartElement("fonts");
+			writer.writeAttribute("count", "1");
+			
+			writer.writeStartElement("font");
+			writer.writeStartElement("sz");
+			writer.writeAttribute("val", "10");
+			writer.writeEndElement();
+			writer.writeStartElement("name");
+			writer.writeAttribute("val", "Arial");
+			writer.writeEndElement();
+			writer.writeStartElement("family");
+			writer.writeAttribute("val", "2");
+			writer.writeEndElement();
+			writer.writeEndElement();
+			
+			writer.writeEndElement();
+			
+			writer.writeStartElement("fills");
+			writer.writeAttribute("count", "1");
+			
+			writer.writeStartElement("fill");
+			writer.writeStartElement("patternFill");
+			writer.writeAttribute("patternType", "none");
+			writer.writeEndElement();
+			writer.writeEndElement();
+			
+			writer.writeEndElement();
+			
+			writer.writeStartElement("borders");
+			writer.writeAttribute("count", "1");
+			
+			writer.writeStartElement("border");
+			writer.writeAttribute("diagonalDown", "false");
+			writer.writeAttribute("diagonalUp", "false");
+			writer.writeStartElement("left");
+			writer.writeEndElement();
+			writer.writeStartElement("right");
+			writer.writeEndElement();
+			writer.writeStartElement("top");
+			writer.writeEndElement();
+			writer.writeStartElement("bottom");
+			writer.writeEndElement();
+			writer.writeStartElement("diagonal");
+			writer.writeEndElement();
+			writer.writeEndElement();
+			
+			writer.writeEndElement();
+			
+			writer.writeStartElement("cellStyleXfs");
+			writer.writeAttribute("count", "1");
+			
+			writer.writeStartElement("xf");
+			writer.writeAttribute("numFmtId", "0");
+			writer.writeAttribute("applyProtection", "0");
+			writer.writeAttribute("applyAlignment", "0");
+			writer.writeAttribute("applyBorder", "0");
+			writer.writeAttribute("applyFont", "0");
+			writer.writeAttribute("borderId", "0");
+			writer.writeAttribute("fillId", "0");
+			writer.writeAttribute("fontId", "0");
+			writer.writeEndElement();
+			writer.writeEndElement();
+			
+			writer.writeStartElement("cellXfs");
+			writer.writeAttribute("count", "1");
+			
+			writer.writeStartElement("xf");
+			writer.writeAttribute("numFmtId", "0");
+			writer.writeAttribute("borderId", "0");
+			writer.writeAttribute("fillId", "0");
+			writer.writeAttribute("fontId", "0");
+			writer.writeAttribute("xfId", "0");
+			writer.writeEndElement();
+			
+			writer.writeEndElement();
+			
+			writer.writeStartElement("cellStyles");
+			writer.writeAttribute("count", "1");
+			
+			cellStyle(writer, "0", "false", "0", "Normal");
+			
+			writer.writeEndElement();
+			
+			writer.writeEndElement();
+			writer.writeEndDocument();
 			zos.closeEntry();
 			
 			zos.putNextEntry(new ZipEntry("xl/_rels/workbook.xml.rels"));
@@ -511,10 +608,12 @@ public class Main {
 			writer.writeStartElement("sheetFormatPr");
 			writer.writeAttribute("outlineLevelCol", "0");
 			writer.writeAttribute("outlineLevelRow", "0");
-			writer.writeAttribute("zeroHeight", "fale");
+			writer.writeAttribute("zeroHeight", "false");
+			writer.writeAttribute("defaultRowHeight", "12.8");
 			writer.writeEndElement();
 			
 			writer.writeStartElement("cols");
+			writer.writeStartElement("col");
 			writer.writeAttribute("width", "11.52");
 			writer.writeAttribute("style", "0");
 			writer.writeAttribute("min", "1");
@@ -523,6 +622,7 @@ public class Main {
 			writer.writeAttribute("hidden", "false");
 			writer.writeAttribute("customWidth", "false");
 			writer.writeAttribute("collapsed", "false");
+			writer.writeEndElement();
 			writer.writeEndElement();
 			
 			writer.writeStartElement("sheetData");
@@ -666,32 +766,35 @@ public class Main {
 		writer.writeAttribute("fillId", fillId);
 		writer.writeAttribute("fontId", fontId);
 		writer.writeAttribute("xfId", xfId);
-		
-		writer.writeStartElement("alignment");
-		writer.writeAttribute("shrinkToFit", "false");
-		writer.writeAttribute("indent", "0");
-		writer.writeAttribute("wrapText", "false");
-		writer.writeAttribute("textRotation", "0");
-		writer.writeAttribute("vertical", "bottom");
-		writer.writeAttribute("horizontal", "general");
-		writer.writeEndElement();
-		
-		writer.writeStartElement("alignment");
-		writer.writeAttribute("hidden", "false");
-		writer.writeAttribute("locked", "true");
-		writer.writeEndElement();
-		
 		writer.writeEndElement();
 	}
 	
 	private static void cellStyle(XMLStreamWriter writer, String xfId,
 			String customBuiltin, String builtinId, String name) throws XMLStreamException {
-		writer.writeStartElement("xf");
+		writer.writeStartElement("cellStyle");
 		writer.writeAttribute("xfId", xfId);
 		writer.writeAttribute("customBuiltin", customBuiltin);
 		writer.writeAttribute("builtinId", builtinId);
 		writer.writeAttribute("name", name);
 		writer.writeEndElement();
+	}*/
+	
+	public static void main(String[] args) {
+		String name = "apiExample";
+		File apiExample = new File(name + ".xlsx");
+		Save save = new Save(apiExample);
+		Workbook workbook = new Workbook(name);
+		
+		Worksheet sheet1 = workbook.createSheet("Sheet1");
+		Row row = sheet1.row();
+		row.string("beep");
+		row.string("beep");
+		row.string("im");
+		row.string("a");
+		row.string("jeep");
+		
+		workbook.save(save);
+		save.close();
 	}
 }
 
