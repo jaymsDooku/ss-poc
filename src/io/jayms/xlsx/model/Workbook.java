@@ -1,5 +1,6 @@
 package io.jayms.xlsx.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,6 +85,12 @@ public class Workbook implements Part {
 		} catch (XMLStreamException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void save(File file) {
+		Save save = new Save(file);
+		save(save);
+		save.close();
 	}
 	
 	private void saveWorkbook(Save save) throws IOException, XMLStreamException {
@@ -183,4 +190,5 @@ public class Workbook implements Part {
 		writer.writeEndDocument();
 		zos.closeEntry();
 	}
+	
 }

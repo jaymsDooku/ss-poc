@@ -1,11 +1,6 @@
 package io.jayms.xlsx;
 
-import java.io.File;
-
-import io.jayms.xlsx.model.Row;
-import io.jayms.xlsx.model.Save;
-import io.jayms.xlsx.model.Workbook;
-import io.jayms.xlsx.model.Worksheet;
+import io.jayms.xlsx.db.Database;
 
 public class Main {
 
@@ -780,9 +775,8 @@ public class Main {
 	}*/
 	
 	public static void main(String[] args) {
-		String name = "apiExample";
+		/*String name = "apiExample";
 		File apiExample = new File(name + ".xlsx");
-		Save save = new Save(apiExample);
 		Workbook workbook = new Workbook(name);
 		
 		Worksheet sheet1 = workbook.createSheet("Sheet1");
@@ -793,8 +787,10 @@ public class Main {
 		row.string("a");
 		row.string("jeep");
 		
-		workbook.save(save);
-		save.close();
+		workbook.save(apiExample);*/
+		
+		Database db = new Database("localhost", "1521", "admin", "pass");
+		System.out.println("Connected to db.");
 	}
 }
 
