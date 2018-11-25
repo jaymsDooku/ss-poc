@@ -71,4 +71,16 @@ public class Row implements Part {
 		}
 		
 	}
+	
+	@Override
+	public String toString() {
+		String result = "[";
+		for (int i = 0; i < cells.size(); i++) {
+			Cell c = cells.get(i);
+			result += c.toString();
+			result += ",";
+		}
+		result += "]";
+		return result;
+	}
 }

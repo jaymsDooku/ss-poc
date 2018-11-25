@@ -1,6 +1,10 @@
 package io.jayms.xlsx;
 
+import java.io.File;
+
 import io.jayms.xlsx.db.Database;
+import io.jayms.xlsx.db.DatabaseConverter;
+import io.jayms.xlsx.model.Workbook;
 
 public class Main {
 
@@ -788,9 +792,14 @@ public class Main {
 		row.string("jeep");
 		
 		workbook.save(apiExample);*/
+		String name = "test";
+		File apiExample = new File(name + ".xlsx");
+		Workbook workbook = new Workbook(name);
 		
-		Database db = new Database("localhost", "1521", "admin", "pass");
+		Database db = new Database("testserver6767", "database.windows.net", "1433", "Test", "jayms", "Qwerty123");
 		System.out.println("Connected to db.");
+		DatabaseConverter converter = new DatabaseConverter(db);
+		converter.toWorksheet(workbook, name, "select top 1 * from SalesLT.Customer");
 	}
 }
 

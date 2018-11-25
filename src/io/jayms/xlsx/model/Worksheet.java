@@ -167,5 +167,21 @@ public class Worksheet implements RelationshipPart {
 	public String type() {
 		return "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
 	}
+	
+	@Override
+	public String toString() {
+		String result = "[";
+		
+		for (int i = 0; i < rows.size(); i++) {
+			Row row = rows.get(i);
+			result += "{ROW" + i + " | " + row.toString();
+			if (i < (rows.size() - 1)) {
+				result += "}, ";
+			}
+		}
+		
+		result += "]";
+		return result;
+	}
 
 }
