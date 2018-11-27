@@ -12,7 +12,7 @@ public class Database {
 	
 	public Database(String serverName, String host, String port, String databaseName, String user, String pass) {
 		try {
-			DriverManager.deregisterDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
+			DriverManager.registerDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
 			connection = DriverManager.getConnection("jdbc:sqlserver://" + serverName + ".database.windows.net:" + port + ";database=" + databaseName + ";user=" + user + "@testserver6767;password={" + pass + "};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
 		} catch (SQLException e) {
 			e.printStackTrace();
