@@ -11,9 +11,9 @@ import io.jayms.xlsx.model.Worksheet;
 
 public class DatabaseConverter {
 
-	private Database db;
+	private AbstractDatabase db;
 	
-	public DatabaseConverter(Database db) {
+	public DatabaseConverter(AbstractDatabase db) {
 		this.db = db;
 	}
 	

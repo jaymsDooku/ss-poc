@@ -2,19 +2,19 @@ package io.jayms.xlsx.db;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Database {
+public abstract class AbstractDatabase {
+
+	protected Connection connection;
 	
-	private Connection connection;
-	
-	public Database(String serverName, String host, String port, String databaseName, String user, String pass) {
+	public AbstractDatabase(String serverName, String host, String port, String databaseName, String user, String pass) {
 		try {
-			DriverManager.registerDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
-			connection = DriverManager.getConnection("jdbc:sqlserver://" + serverName + ".database.windows.net:" + port + ";database=" + databaseName + ";user=" + user + "@testserver6767;password={" + pass + "};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
-		} catch (SQLException e) {
+			initConnection(serverName, host, port, databaseName, user, pass);
+		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -34,4 +34,6 @@ public class Database {
             return false;
         }
     }
+	
+	protected abstract void initConnection(String serverName, String host, String port, String databaseName, String user, String pass) throws SQLException, ClassNotFoundException;
 }
