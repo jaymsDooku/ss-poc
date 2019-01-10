@@ -10,12 +10,19 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class Save {
 
-	private ZipOutputStream zos;
-	private XMLStreamWriter writer;
+	@Getter private ZipOutputStream zos;
+	@Getter private XMLStreamWriter writer;
+	@Getter @Setter private Workbook workbook;
 	
-	public Save(File file) {
+	@Getter @Setter private String prevValue;
+	@Getter @Setter private int bandColour = 1;
+	
+	public Save(File file, Workbook workbook) {
 		if (!file.exists()) {
 			if (file.getParentFile() != null) {
 				if (!file.getParentFile().exists()) {
@@ -38,14 +45,8 @@ public class Save {
 		} catch (FileNotFoundException | XMLStreamException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public ZipOutputStream zos() {
-		return zos;
-	}
-	
-	public XMLStreamWriter writer() {
-		return writer;
+		
+		this.workbook = workbook;
 	}
 	
 	public void close() {

@@ -40,8 +40,8 @@ public class Worksheet implements RelationshipPart {
 
 	@Override
 	public void save(Save save) {
-		ZipOutputStream zos = save.zos();
-		XMLStreamWriter writer = save.writer();
+		ZipOutputStream zos = save.getZos();
+		XMLStreamWriter writer = save.getWriter();
 		try {
 			zos.putNextEntry(new ZipEntry("xl/" + target()));
 			writer.writeStartDocument("UTF-8", "1.0");

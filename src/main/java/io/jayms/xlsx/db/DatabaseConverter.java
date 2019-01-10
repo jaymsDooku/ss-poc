@@ -30,6 +30,7 @@ public class DatabaseConverter {
 			int columnCount = meta.getColumnCount();
 			System.out.println(columnCount);
 			Row headerRow = ws.row();
+			headerRow.setTitleRow(true);
 			DatabaseColumn[] columns = new DatabaseColumn[columnCount];
 			for (int i = 1; i <= columnCount; i++) {
 				String colName = meta.getColumnName(i);
@@ -50,9 +51,9 @@ public class DatabaseConverter {
 				Row row = ws.row();
 				for (int i = 0; i < columns.length; i++) {
 					DatabaseColumn col = columns[i];
-					String colName = col.name();
-					String colLabel = col.label();
-					int colType = col.type();
+					String colName = col.getName();
+					String colLabel = col.getLabel();
+					int colType = col.getType();
 					String value;
 					switch(colType) {
 						case DatabaseColumnTypes.NVARCHAR:

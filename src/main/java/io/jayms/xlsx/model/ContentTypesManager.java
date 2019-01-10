@@ -18,8 +18,8 @@ public class ContentTypesManager implements Part {
 	
 	@Override
 	public void save(Save save) {
-		ZipOutputStream zos = save.zos();
-		XMLStreamWriter writer = save.writer();
+		ZipOutputStream zos = save.getZos();
+		XMLStreamWriter writer = save.getWriter();
 		try {
 			
 			zos.putNextEntry(new ZipEntry("[Content_Types].xml"));
@@ -42,7 +42,7 @@ public class ContentTypesManager implements Part {
 			writer.writeAttribute("ContentType", ContentTypes.APP);
 			writer.writeEndElement();
 			
-			Collection<Worksheet> worksheets = workbook.worksheets();
+			Collection<Worksheet> worksheets = workbook.getWorksheets();
 			for (Worksheet ws : worksheets) {
 				writer.writeStartElement("Override");
 				writer.writeAttribute("PartName", "/xl/" + ws.target());

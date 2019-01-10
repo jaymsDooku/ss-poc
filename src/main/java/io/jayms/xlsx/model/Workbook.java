@@ -1,5 +1,6 @@
 package io.jayms.xlsx.model;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -11,16 +12,21 @@ import java.util.zip.ZipOutputStream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-public class Workbook implements Part {
+import lombok.Getter;
 
-	private String name;
-	private RelationshipManager rsMan;
-	private ContentTypesManager contentTypes;
-	private CoreProperties coreProps;
-	private AppProperties appProps;
-	private StyleSheet styleSheet;
-	private SharedStrings sharedStrings;
-	private LinkedList<Worksheet> sheets;
+public class Workbook implements Part {
+	
+	@Getter private String name;
+	@Getter private RelationshipManager rsMan;
+	@Getter private ContentTypesManager contentTypes;
+	@Getter private CoreProperties coreProps;
+	@Getter private AppProperties appProps;
+	@Getter private StyleSheet styleSheet;
+	@Getter private SharedStrings sharedStrings;
+	@Getter private LinkedList<Worksheet> sheets;
+	@Getter private DoubleBandFormat colourFormat;
+	@Getter private Style titleStyle;
+	@Getter private StyleTable styleTable;
 	
 	public Workbook(String name) {
 		this.name = name;
@@ -34,17 +40,19 @@ public class Workbook implements Part {
 		sheets = new LinkedList<>();
 		appProps = new AppProperties();
 		coreProps = new CoreProperties();
+		
+		styleTable = new StyleTable();
+		
+		this.colourFormat = new DoubleBandFormat(styleTable.getStyle(7),
+				styleTable.getStyle(8));
+		
+		Color tc = new Color(102, 153, 153, 255);
+		Font tf = new Font(12, "Arial", 2, true, new Color(0, 0, 0, 255));
+		
+		this.titleStyle = new Style(tf, new Fill(tc));
 	}
 	
-	public String name() {
-		return name;
-	}
-	
-	public SharedStrings sharedStrings() {
-		return sharedStrings;
-	}
-	
-	public Collection<Worksheet> worksheets() {
+	public Collection<Worksheet> getWorksheets() {
 		return Collections.unmodifiableCollection(sheets);
 	}
 	
@@ -88,14 +96,14 @@ public class Workbook implements Part {
 	}
 	
 	public void save(File file) {
-		Save save = new Save(file);
+		Save save = new Save(file, this);
 		save(save);
 		save.close();
 	}
 	
 	private void saveWorkbook(Save save) throws IOException, XMLStreamException {
-		ZipOutputStream zos = save.zos();
-		XMLStreamWriter writer = save.writer();
+		ZipOutputStream zos = save.getZos();
+		XMLStreamWriter writer = save.getWriter();
 		zos.putNextEntry(new ZipEntry("xl/workbook.xml"));
 		writer.writeStartDocument("UTF-8", "1.0");
 		writer.writeStartElement("workbook");
@@ -161,8 +169,8 @@ public class Workbook implements Part {
 	}
 	
 	private void saveWorkbookRelationships(Save save) throws XMLStreamException, IOException {
-		ZipOutputStream zos = save.zos();
-		XMLStreamWriter writer = save.writer();
+		ZipOutputStream zos = save.getZos();
+		XMLStreamWriter writer = save.getWriter();
 		zos.putNextEntry(new ZipEntry("_rels/.rels"));
 		writer.writeStartDocument("UTF-8", "1.0");
 		writer.writeStartElement("Relationships");

@@ -3,7 +3,7 @@ package io.jayms.xlsx;
 import java.io.File;
 
 import io.jayms.xlsx.db.DatabaseConverter;
-import io.jayms.xlsx.db.SQLServerDatabase;
+import io.jayms.xlsx.db.SQLiteDatabase;
 import io.jayms.xlsx.model.Workbook;
 import io.jayms.xlsx.model.Worksheet;
 
@@ -797,10 +797,10 @@ public class Main {
 		File apiExample = new File(name + ".xlsx");
 		Workbook workbook = new Workbook(name);
 		
-		SQLServerDatabase db = new SQLServerDatabase("testserver6767", "database.windows.net", "1433", "Test", "jayms", "Qwerty123");
+		SQLiteDatabase db = new SQLiteDatabase(new File("localDBs2.sqlite"));
 		System.out.println("Connected to db.");
 		DatabaseConverter converter = new DatabaseConverter(db);
-		Worksheet ws = converter.toWorksheet(workbook, name, "select top 100 * from SalesLT.Customer");
+		Worksheet ws = converter.toWorksheet(workbook, name, "select * from QUERIES");
 		workbook.save(apiExample);
 	}
 }

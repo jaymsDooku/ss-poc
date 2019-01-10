@@ -67,8 +67,8 @@ public class RelationshipManager implements Part {
     
     @Override
     public void save(Save save) {
-        ZipOutputStream zos = save.zos();
-        XMLStreamWriter writer = save.writer();
+        ZipOutputStream zos = save.getZos();
+        XMLStreamWriter writer = save.getWriter();
         
         try {
 	        zos.putNextEntry(new ZipEntry("xl/_rels/workbook.xml.rels"));
