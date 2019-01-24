@@ -21,7 +21,7 @@ public class DatabaseConverter {
 		Worksheet ws = wb.createSheet(name);
 		
 		try {
-			PreparedStatement ps = this.db.connection().prepareStatement(query);
+			PreparedStatement ps = this.db.getConnection().prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
 			
 			ResultSetMetaData meta = rs.getMetaData();

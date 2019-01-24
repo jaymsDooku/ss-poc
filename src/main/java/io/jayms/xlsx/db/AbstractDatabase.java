@@ -2,12 +2,10 @@ package io.jayms.xlsx.db;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class AbstractDatabase {
+public abstract class AbstractDatabase implements Database {
 
 	protected Connection connection;
 	
@@ -19,10 +17,12 @@ public abstract class AbstractDatabase {
 		}
 	}
 	
-	public Connection connection() {
+	@Override
+	public Connection getConnection() {
 		return connection;
 	}
 	
+	@Override
 	public boolean tableExists(String table) {
         try {
             DatabaseMetaData dmd = this.connection.getMetaData();
@@ -35,5 +35,6 @@ public abstract class AbstractDatabase {
         }
     }
 	
-	protected abstract void initConnection(String serverName, String host, String port, String databaseName, String user, String pass) throws SQLException, ClassNotFoundException;
+	protected abstract void initConnection(String serverName, String host, String port, String databaseName, String user,
+			String pass) throws SQLException, ClassNotFoundException;
 }
