@@ -11,15 +11,13 @@ import io.jayms.xlsx.model.Worksheet;
 
 public class DatabaseConverter {
 
-	private AbstractDatabase db;
+	private Database db;
 	
-	public DatabaseConverter(AbstractDatabase db) {
+	public DatabaseConverter(Database db) {
 		this.db = db;
 	}
 	
-	public Worksheet toWorksheet(Workbook wb, String name, String query) {
-		Worksheet ws = wb.createSheet(name);
-		
+	private Worksheet appendQuery(Worksheet ws, String query) {
 		try {
 			PreparedStatement ps = this.db.getConnection().prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
@@ -83,6 +81,12 @@ public class DatabaseConverter {
 			e.printStackTrace();
 		}
 		
+		return ws;
+	}
+	
+	public Worksheet addQueryToWorksheet(Workbook wb, String name, String query) {
+		Worksheet ws = wb.hasWorksheet(name) ? wb.getWorksheet(name) : wb.createSheet(name);
+		appendQuery(ws, query);
 		return ws;
 	}
 }
