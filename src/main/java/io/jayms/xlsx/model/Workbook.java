@@ -9,10 +9,13 @@ import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class Workbook implements Part {
 	
@@ -24,9 +27,20 @@ public class Workbook implements Part {
 	@Getter private StyleSheet styleSheet;
 	@Getter private SharedStrings sharedStrings;
 	@Getter private LinkedList<Worksheet> sheets;
-	@Getter private DoubleBandFormat colourFormat;
-	@Getter private Style titleStyle;
+	@Getter @Setter private DoubleBandFormat colourFormat;
+	@Getter @Setter private Style titleStyle;
 	@Getter private StyleTable styleTable;
+	
+	public Workbook(File file) {
+		this(file.getName());
+		String name = file.getName();
+		System.out.println("File Name: " + name);
+		try {
+			load(file);
+		} catch (XMLStreamException | IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public Workbook(String name) {
 		this.name = name;
@@ -50,6 +64,14 @@ public class Workbook implements Part {
 		Font tf = new Font(12, "Arial", 2, true, new Color(0, 0, 0, 255));
 		
 		this.titleStyle = new Style(tf, new Fill(tc));
+	}
+	
+	public Worksheet getWorksheet(String worksheetName) {
+		return sheets.stream().filter(ws -> ws.getName().equals(worksheetName)).findFirst().orElse(null);
+	}
+	
+	public boolean hasWorksheet(String worksheetName) {
+		return sheets.stream().filter(ws -> ws.getName().equals(worksheetName)).findFirst().isPresent();
 	}
 	
 	public Collection<Worksheet> getWorksheets() {
@@ -141,7 +163,7 @@ public class Workbook implements Part {
 		writer.writeStartElement("sheets");
 		for (int i = 0; i < sheets.size(); i++) {
 			Worksheet ws = sheets.get(i);
-			String name = ws.name();
+			String name = ws.getName();
 			String rId = rsMan.id(ws);
 			String sheetId = Integer.toString((i+1));
 			writer.writeStartElement("sheet");
@@ -197,6 +219,24 @@ public class Workbook implements Part {
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		zos.closeEntry();
+	}
+	
+	public void load(File file) throws XMLStreamException, IOException {
+		Load load = new Load(file, this);
+		load(load);
+		load.close();
+	}
+	
+	public void load(Load load) throws XMLStreamException, IOException {
+		XMLStreamReader reader = load.getReader("xl/workbook.xml");
+		while (reader.hasNext()) {
+			int index = reader.next();
+			QName qname = reader.getName();
+			System.out.println("index: " + index);
+			System.out.println("prefix: " + qname.getPrefix());
+			System.out.println("localpart: " + qname.getLocalPart());
+			System.out.println("namespace: " + qname.getNamespaceURI());
+		}
 	}
 	
 }

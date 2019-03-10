@@ -46,7 +46,7 @@ public class Row implements Part {
 			writer.writeAttribute("ht", "12.8");
 			writer.writeAttribute("customFormat", "false");
 			
-			SharedStrings sharedStrings = worksheet.workbook().getSharedStrings();
+			SharedStrings sharedStrings = worksheet.getWorkbook().getSharedStrings();
 			
 			int bandColour = save.getBandColour();
 			boolean alternateColour = false;

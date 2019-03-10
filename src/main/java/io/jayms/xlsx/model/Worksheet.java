@@ -8,24 +8,18 @@ import java.util.zip.ZipOutputStream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import lombok.Getter;
+
 public class Worksheet implements RelationshipPart {
 	
-	private final Workbook wb;
-	private String name;
+	@Getter private final Workbook workbook;
+	@Getter private String name;
 	private LinkedList<Row> rows;
 	
 	public Worksheet(Workbook wb, String name) {
-		this.wb = wb;
+		this.workbook = wb;
 		this.name = name;
 		rows = new LinkedList<>();
-	}
-	
-	public Workbook workbook() {
-		return wb;
-	}
-	
-	public String name() {
-		return name;
 	}
 	
 	public int indexOf(Row row) {
