@@ -27,9 +27,8 @@ public class Workbook implements Part {
 	@Getter private StyleSheet styleSheet;
 	@Getter private SharedStrings sharedStrings;
 	@Getter private LinkedList<Worksheet> sheets;
-	@Getter @Setter private DoubleBandFormat colourFormat;
-	@Getter @Setter private Style titleStyle;
-	@Getter private StyleTable styleTable;
+	@Getter private DoubleBandFormat colourFormat;
+	@Getter private Style titleStyle;
 	
 	public Workbook(File file) {
 		this(file.getName());
@@ -55,10 +54,8 @@ public class Workbook implements Part {
 		appProps = new AppProperties();
 		coreProps = new CoreProperties();
 		
-		styleTable = new StyleTable();
-		
-		this.colourFormat = new DoubleBandFormat(styleTable.getStyle(7),
-				styleTable.getStyle(8));
+		this.colourFormat = new DoubleBandFormat(StyleTable.STYLE_TABLE.getStyle(7),
+				StyleTable.STYLE_TABLE.getStyle(8));
 		
 		Color tc = new Color(102, 153, 153, 255);
 		Font tf = new Font(12, "Arial", 2, true, new Color(0, 0, 0, 255));

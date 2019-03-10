@@ -2,12 +2,14 @@ package io.jayms.xlsx.model;
 
 import java.awt.Color;
 
-public class StyleTable {
+public final class StyleTable {
+	
+	public static final StyleTable STYLE_TABLE = new StyleTable();
 
 	private Style[] styles;
 	
-	public StyleTable() {
-		this.styles = new Style[70];
+	private StyleTable() {
+		this.styles = new Style[25];
 		
 		Color black = new Color(0, 0, 0, 255);
 		Color white = new Color(255, 255, 255, 255);
@@ -37,12 +39,10 @@ public class StyleTable {
 		styles[18] = new Style(blackFt, new Fill(new Color(217, 225, 242, 255)));
 		styles[19] = new Style(blackFt, new Fill(new Color(226, 239, 218, 255)));
 		styles[20] = new Style(blackFt, new Fill(new Color(217, 217, 217, 255)));
-		
 		styles[21] = new Style(whiteFt, new Fill(new Color(89, 89, 89, 255)));
 		styles[22] = new Style(blackFt, new Fill(new Color(174, 170, 170, 255)));
 		styles[23] = new Style(whiteFt, new Fill(new Color(172, 185, 202, 255)));
 		styles[24] = new Style(whiteFt, new Fill(new Color(189, 215, 238, 255)));
-		
 	}
 	
 	public Style getStyle(int index) {
