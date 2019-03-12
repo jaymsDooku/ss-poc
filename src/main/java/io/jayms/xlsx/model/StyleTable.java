@@ -1,6 +1,10 @@
 package io.jayms.xlsx.model;
 
 import java.awt.Color;
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import lombok.Getter;
 
 import lombok.Getter;
 
@@ -49,5 +53,9 @@ public final class StyleTable {
 	
 	public Style getStyle(int index) {
 		return styles[index];
+	}
+	
+	public Stream<Style> stream() {
+		return Arrays.stream(styles);
 	}
 }
