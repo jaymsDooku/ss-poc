@@ -2,11 +2,13 @@ package io.jayms.xlsx.model;
 
 import java.awt.Color;
 
+import lombok.Getter;
+
 public final class StyleTable {
 	
 	public static final StyleTable STYLE_TABLE = new StyleTable();
 
-	private Style[] styles;
+	@Getter private Style[] styles;
 	
 	private StyleTable() {
 		this.styles = new Style[25];
