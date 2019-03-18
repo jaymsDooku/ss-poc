@@ -5,9 +5,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import lombok.Getter;
+
 public abstract class AbstractDatabase implements Database {
 
-	protected Connection connection;
+	@Getter protected Connection connection;
 	
 	public AbstractDatabase(String serverName, String host, String port, String databaseName, String user, String pass) {
 		try {
@@ -15,11 +17,6 @@ public abstract class AbstractDatabase implements Database {
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	@Override
-	public Connection getConnection() {
-		return connection;
 	}
 	
 	@Override

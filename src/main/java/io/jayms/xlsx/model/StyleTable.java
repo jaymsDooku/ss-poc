@@ -6,8 +6,6 @@ import java.util.stream.Stream;
 
 import lombok.Getter;
 
-import lombok.Getter;
-
 public final class StyleTable {
 	
 	public static final StyleTable STYLE_TABLE = new StyleTable();
@@ -53,6 +51,10 @@ public final class StyleTable {
 	
 	public Style getStyle(int index) {
 		return styles[index];
+	}
+	
+	public Style getStyle(Color color) {
+		return stream().filter(s -> s.getFill().getColor().equals(color)).findFirst().orElse(null);
 	}
 	
 	public Stream<Style> stream() {
