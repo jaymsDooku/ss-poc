@@ -1,5 +1,7 @@
 package io.jayms.xlsx.model;
 
+import java.awt.Color;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,5 +13,16 @@ public class Style {
 	public Style(Font font, Fill fill) {
 		this.font = font;
 		this.fill = fill;
+	}
+	
+	public static int encodeRGB(Color color) {
+		return (((color.getRed() << 8) + color.getGreen() << 8) + color.getBlue());
+	}
+	
+	public static Color decodeRGB(int encoded) {
+		int red = (encoded >> 16) & 0xFF;
+		int green = (encoded >> 8) & 0xFF;
+		int blue = encoded & 0xFF;
+		return new Color(red, green, blue);
 	}
 }
