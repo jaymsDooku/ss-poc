@@ -795,14 +795,14 @@ public class Main {
 		workbook.save(apiExample);*/
 		String name = "test";
 		File apiExample = new File(name + ".xlsx");
-		Workbook workbook = new Workbook(apiExample);
-		/*Workbook workbook = new Workbook(name);
+		//Workbook workbook = new Workbook(apiExample);
+		Workbook workbook = new Workbook(name);
 		
 		SQLiteDatabase db = new SQLiteDatabase(new File("localDBs2.sqlite"));
 		System.out.println("Connected to db.");
 		DatabaseConverter converter = new DatabaseConverter(db);
 		Worksheet ws = converter.addQueryToWorksheet(workbook, name, "select * from QUERIES");
-		workbook.save(apiExample);*/
+		workbook.save(apiExample);
 	}
 }
 

@@ -1,6 +1,7 @@
 package io.jayms.xlsx.model;
 
 import java.awt.Color;
+import java.util.Objects;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,19 @@ public class Style {
 	public Style(Font font, Fill fill) {
 		this.font = font;
 		this.fill = fill;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(font, fill);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Style)) return false;
+		
+		Style s = (Style) obj;
+		return s.hashCode() == hashCode();
 	}
 	
 	public static int encodeRGB(Color color) {

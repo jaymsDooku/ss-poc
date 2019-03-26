@@ -6,20 +6,21 @@ import java.util.stream.Stream;
 
 import lombok.Getter;
 
-public final class StyleTable {
-	
-	public static final StyleTable STYLE_TABLE = new StyleTable();
+public class StyleTable {
 
+	@Getter private Workbook workbook;
 	@Getter private Style[] styles;
 	
-	private StyleTable() {
+	public StyleTable(Workbook workbook) {
+		this.workbook = workbook;
 		this.styles = new Style[25];
 		
 		Color black = new Color(0, 0, 0, 255);
 		Color white = new Color(255, 255, 255, 255);
 		
-		Font blackFt = new Font(12, "Arial", 2, false, black);
-		Font whiteFt = new Font(12, "Arial", 2, false, white);
+		FontManager ftMan = workbook.getFontManager();
+		Font blackFt = ftMan.getFont(ftMan.createFont("Arial", 12, false, black));
+		Font whiteFt = ftMan.getFont(ftMan.createFont("Times New Roman", 12, false, white));
 		
 		styles[0] = new Style(blackFt, new Fill(white));
 		styles[1] = new Style(whiteFt, new Fill(black));
@@ -55,6 +56,16 @@ public final class StyleTable {
 	
 	public Style getStyle(Color color) {
 		return stream().filter(s -> s.getFill().getColor().equals(color)).findFirst().orElse(null);
+	}
+	
+	public int indexOf(Style style) {
+		for (int i = 0; i < styles.length; i++) {
+			Style s = styles[i];
+			if (s.equals(style)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	public Stream<Style> stream() {
