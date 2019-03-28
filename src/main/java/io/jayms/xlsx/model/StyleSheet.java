@@ -204,7 +204,7 @@ public class StyleSheet implements RelationshipPart {
 		writer.writeAttribute("val", font.getName());
 		writer.writeEndElement();
 		writer.writeStartElement("family");
-		writer.writeAttribute("val", Integer.toString(font.getFamily()));
+		writer.writeAttribute("val", Integer.toString(font.getHandle()));
 		writer.writeEndElement();
 		writer.writeStartElement("color");
 		writer.writeAttribute("rgb", Fill.toHex(font.getColor()));

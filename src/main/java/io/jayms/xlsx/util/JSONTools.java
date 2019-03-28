@@ -30,7 +30,7 @@ public final class JSONTools {
 		public static JSONObject toJSON(Font font) {
 			JSONObject obj = new JSONObject();
 			obj.put("size", font.getSize());
-			obj.put("family", font.getFamily());
+			obj.put("family", font.getHandle());
 			obj.put("name", font.getName());
 			obj.put("color", Style.encodeRGB(font.getColor()));
 			obj.put("bold", font.isBold());
