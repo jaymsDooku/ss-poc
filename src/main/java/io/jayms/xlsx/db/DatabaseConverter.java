@@ -3,7 +3,9 @@ package io.jayms.xlsx.db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import io.jayms.xlsx.model.Row;
 import io.jayms.xlsx.model.Workbook;
@@ -17,7 +19,7 @@ public class DatabaseConverter {
 		this.db = db;
 	}
 	
-	private Worksheet appendQuery(Worksheet ws, String query) {
+	public Worksheet appendQuery(Worksheet ws, String query) {
 		try {
 			PreparedStatement ps = this.db.getConnection().prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
@@ -40,7 +42,7 @@ public class DatabaseConverter {
 				System.out.println("Column Label " + colLabel);
 				System.out.println("Column Type " + colType);
 				System.out.println("Column Type Name " + typeName);
-				columns[i-1] = new DatabaseColumn(colName, colLabel, colType);
+				columns[i-1] = new DatabaseColumn(i, colName, colLabel, colType);
 				
 				headerRow.string(colName);
 			}
@@ -53,13 +55,16 @@ public class DatabaseConverter {
 					String colLabel = col.getLabel();
 					int colType = col.getType();
 					String value;
+					System.out.println("colType: " + colType);
 					switch(colType) {
 						case DatabaseColumnTypes.NVARCHAR:
 							value = rs.getNString(colLabel);
 							break;
-						case DatabaseColumnTypes.UUID:
 						case DatabaseColumnTypes.VARCHAR:
 							value = rs.getString(colLabel);
+							break;
+						case DatabaseColumnTypes.NUMBER:
+							value = Double.toString(rs.getDouble(colLabel));
 							break;
 						case DatabaseColumnTypes.INT:
 							value = Integer.toString(rs.getInt(colLabel));
@@ -67,8 +72,27 @@ public class DatabaseConverter {
 						case DatabaseColumnTypes.BOOL:
 							value = Boolean.toString(rs.getBoolean(colLabel));
 							break;
-						case DatabaseColumnTypes.DATETIME:
+						case DatabaseColumnTypes.DATE:
+						case DatabaseColumnTypes.TIMESTAMP:
 							value = rs.getDate(colLabel).toString();
+							break;
+						case DatabaseColumnTypes.INTERVAL_DS:
+						case DatabaseColumnTypes.INTERVAL_YM:
+							value = rs.getString(colLabel);
+							break;
+						case DatabaseColumnTypes.ROWID:
+							System.out.println("stuck");
+							value = new String(rs.getBytes(colLabel));
+							System.out.println("passed stuck");
+							break;
+						case DatabaseColumnTypes.CLOB:
+							value = rs.getClob(colLabel).toString();
+							break;
+						case DatabaseColumnTypes.RAW:
+							value = rs.getBytes(colLabel).toString();
+							break;
+						case DatabaseColumnTypes.CHAR:
+							value = rs.getString(colLabel);
 							break;
 						default:
 							value = "null";

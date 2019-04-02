@@ -12,9 +12,17 @@ public class OracleDatabase extends AbstractDatabase {
 	}
 
 	@Override
-	protected void initConnection(String serverName, String host, String port, String databaseName, String user, String pass) throws SQLException {
-		DriverManager.registerDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
-		connection = DriverManager.getConnection("jdbc:sqlserver://" + serverName + "." + host + ":" + port + ";database=" + databaseName + ";user=" + user + "@testserver6767;password={" + pass + "};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
+	protected void initConnection(String serverName, String host, String port, String databaseName, String user, String pass) {
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			String connString = "jdbc:oracle:thin:@" + host + ":" + port + ":xe";
+			System.out.println("connString: " + connString);
+			System.out.println("user: " + user);
+			System.out.println("pass: " + pass);
+			connection = DriverManager.getConnection(connString, user, pass);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
 
