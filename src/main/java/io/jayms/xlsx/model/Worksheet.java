@@ -2,19 +2,26 @@ package io.jayms.xlsx.model;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import io.jayms.xlsx.model.cells.StringCell;
+import io.jayms.xlsx.model.cells.SubTotalFunctionTransformer;
+import io.jayms.xlsx.model.meta.RelationshipPart;
 import lombok.Getter;
 
 public class Worksheet implements RelationshipPart {
 	
+	public static final float DEFAULT_COL_WIDTH = 11.52f;
+	
 	@Getter private final Workbook workbook;
 	@Getter private String name;
-	private LinkedList<Row> rows;
+	@Getter private LinkedList<Row> rows;
 	
 	public Worksheet(Workbook wb, String name) {
 		this.workbook = wb;
@@ -30,6 +37,20 @@ public class Worksheet implements RelationshipPart {
 		Row row = new Row(this);
 		rows.add(row);
 		return row;
+	}
+	
+	public Row row(int index) {
+		Row row = new Row(this);
+		rows.add(index, row);
+		return row;
+	}
+	
+	public Row getHeaderRow() {
+		return rows.stream().filter(r -> r.isTitleRow()).findFirst().orElse(null);
+	}
+	
+	public void generateSubTotals(Save save) {
+		new SubTotalFunctionTransformer(this, save).process();
 	}
 
 	@Override
@@ -80,25 +101,48 @@ public class Worksheet implements RelationshipPart {
 			writer.writeAttribute("defaultRowHeight", "12.8");
 			writer.writeEndElement();
 			
-			writer.writeStartElement("cols");
-			writer.writeStartElement("col");
-			writer.writeAttribute("width", "11.52");
-			writer.writeAttribute("style", "0");
-			writer.writeAttribute("min", "1");
-			writer.writeAttribute("max", "1025");
-			writer.writeAttribute("outlineLevel", "0");
-			writer.writeAttribute("hidden", "false");
-			writer.writeAttribute("customWidth", "false");
-			writer.writeAttribute("collapsed", "false");
-			writer.writeEndElement();
-			writer.writeEndElement();
+			System.out.println("Generating SubTotals...");
+			generateSubTotals(save);
+			System.out.println("Generated SubTotals.");
 			
+			WorksheetDescriptor wsDesc = save.getWorksheetDescriptor(getName());
+			Map<String, FieldConfiguration> fieldConfigs = wsDesc != null ? wsDesc.getFieldConfigs() : null;
+			Row headerRow = getHeaderRow();
+			System.out.println("Saving columns...");
+			writer.writeStartElement("cols");
+			List<Cell> cells = headerRow.getCells();
+			System.out.println("cells: " + cells.size());
+			System.out.println("c1");
+			for (int i = 1; i < cells.size(); i++) {
+				StringCell cell = (StringCell) cells.get(i);
+				FieldConfiguration fieldConfig = fieldConfigs != null ? fieldConfigs.get(cell.getValue()) : null;
+				float width = fieldConfig != null ? fieldConfig.getColumnWidth() : DEFAULT_COL_WIDTH;
+				System.out.println("c2");
+				writer.writeStartElement("col");
+				writer.writeAttribute("width", Float.toString(width));
+				writer.writeAttribute("style", "0");
+				System.out.println("c3");
+				System.out.println("i: " + i);
+				writer.writeAttribute("min", Integer.toString(i));
+				writer.writeAttribute("max", Integer.toString(i)); // which cols to affect with this
+				writer.writeAttribute("outlineLevel", "0");
+				writer.writeAttribute("hidden", "false");
+				writer.writeAttribute("customWidth", "false");
+				writer.writeAttribute("collapsed", "false");
+				writer.writeEndElement();
+			}
+			writer.writeEndElement();
+			System.out.println("Saved columns.");
+			
+			System.out.println("Saving rows...");
 			writer.writeStartElement("sheetData");
 			for (int i = 0; i < rows.size(); i++) {
+				System.out.println("Saving row " + i + "/" + rows.size());
 				Row row = rows.get(i);
 				row.save(save);
 			}
 			writer.writeEndElement();
+			System.out.println("Saved rows.");
 			
 			writer.writeStartElement("printOptions");
 			writer.writeAttribute("verticalCentered", "false");
@@ -147,7 +191,7 @@ public class Worksheet implements RelationshipPart {
 			writer.writeEndElement();
 			writer.writeEndDocument();
 			zos.closeEntry();
-		} catch (IOException | XMLStreamException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

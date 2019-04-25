@@ -9,4 +9,6 @@ public interface Database {
 	
 	boolean tableExists(String tableName);
 	
+	void close() throws SQLException;
+	
 }

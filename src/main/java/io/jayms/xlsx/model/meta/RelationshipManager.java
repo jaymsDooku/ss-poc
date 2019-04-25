@@ -1,4 +1,4 @@
-package io.jayms.xlsx.model;
+package io.jayms.xlsx.model.meta;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,6 +9,11 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import io.jayms.xlsx.model.Save;
+import io.jayms.xlsx.model.SharedStrings;
+import io.jayms.xlsx.model.StyleSheet;
+import io.jayms.xlsx.model.Workbook;
 
 public class RelationshipManager implements Part {
 

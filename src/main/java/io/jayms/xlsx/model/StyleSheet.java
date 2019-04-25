@@ -1,12 +1,13 @@
 package io.jayms.xlsx.model;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import io.jayms.xlsx.model.meta.RelationshipPart;
 
 public class StyleSheet implements RelationshipPart {
 
@@ -29,6 +30,7 @@ public class StyleSheet implements RelationshipPart {
 			writer.writeEndElement();
 			
 			Style titleStyle = save.getWorkbook().getTitleStyle();
+			Style subTotalStyle = save.getWorkbook().getSubTotalStyle();
 			DoubleBandFormat dbf = save.getWorkbook().getColourFormat();
 			
 			writer.writeStartElement("fonts");
@@ -37,6 +39,7 @@ public class StyleSheet implements RelationshipPart {
 			writeFont(writer, dbf.getStyle1().getFont());
 			writeFont(writer, dbf.getStyle2().getFont());
 			writeFont(writer, titleStyle.getFont());
+			writeFont(writer, subTotalStyle.getFont());
 			
 			writer.writeEndElement();
 			
@@ -58,6 +61,7 @@ public class StyleSheet implements RelationshipPart {
 			writeFill(writer, dbf.getStyle1().getFill());
 			writeFill(writer, dbf.getStyle2().getFill());
 			writeFill(writer, titleStyle.getFill());
+			writeFill(writer, subTotalStyle.getFill());
 			
 			writer.writeEndElement();
 			

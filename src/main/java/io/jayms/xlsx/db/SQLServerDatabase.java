@@ -14,6 +14,11 @@ public class SQLServerDatabase extends AbstractDatabase {
 	@Override
 	protected void initConnection(String serverName, String host, String port, String databaseName, String user, String pass) throws SQLException {
 		DriverManager.registerDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
-		connection = DriverManager.getConnection("jdbc:sqlserver://" + serverName + "." + host + ":" + port + ";database=" + databaseName + ";user=" + user + "@testserver6767;password={" + pass + "};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
+		String serverPrefix = "";
+		if (serverName != null && !serverName.isEmpty()) {
+			serverPrefix = serverName + ".";
+		}
+		String url = "jdbc:sqlserver://" + serverPrefix + host + ":" + port+ ";user=" + user + ";password=" + pass + ";integratedSecurity=false;databaseName=" + databaseName + ";";
+		connection = DriverManager.getConnection(url);
 	}
 }

@@ -1,4 +1,4 @@
-package io.jayms.xlsx.model;
+package io.jayms.xlsx.model.meta;
 
 public interface RelationshipPart extends Part {
 

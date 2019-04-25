@@ -1,5 +1,8 @@
 package io.jayms.xlsx.db;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class DatabaseColumnTypes {
 
 	public static final int NUMBER = 2;
@@ -14,7 +17,10 @@ public class DatabaseColumnTypes {
 	public static final int INTERVAL_DS = -104;
 	public static final int ROWID = -8;
 	public static final int CLOB = 2005;
+	public static final int XMLTYPE = 2007;
 	public static final int RAW = -3;
 	public static final int CHAR = 1;
+	
+	public static final List<Integer> NUMBER_TYPES = Arrays.asList(NUMBER, INT);
 	
 }

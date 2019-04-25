@@ -3,45 +3,41 @@ package io.jayms.xlsx.model;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import io.jayms.xlsx.model.meta.AppProperties;
+import io.jayms.xlsx.model.meta.ContentTypesManager;
+import io.jayms.xlsx.model.meta.CoreProperties;
+import io.jayms.xlsx.model.meta.Part;
+import io.jayms.xlsx.model.meta.RelationshipManager;
 import lombok.Getter;
 import lombok.Setter;
 
 public class Workbook implements Part {
 	
-	@Getter private String name;
 	@Getter private RelationshipManager rsMan;
 	@Getter private ContentTypesManager contentTypes;
 	@Getter private CoreProperties coreProps;
 	@Getter private AppProperties appProps;
+	
+	@Getter private String name;
 	@Getter private StyleSheet styleSheet;
 	@Getter private SharedStrings sharedStrings;
-	@Getter private LinkedList<Worksheet> sheets;
-	@Getter private DoubleBandFormat colourFormat;
-	@Getter private Style titleStyle;
+	@Getter private List<Worksheet> sheets;
+	@Getter @Setter private DoubleBandFormat colourFormat;
+	@Getter @Setter private Style titleStyle;
+	@Getter @Setter private Style subTotalStyle;
 	@Getter private FontManager fontManager;
 	@Getter private StyleTable styleTable;
-	
-	public Workbook(File file) {
-		this(file.getName());
-		String name = file.getName();
-		System.out.println("File Name: " + name);
-		try {
-			load(file);
-		} catch (XMLStreamException | IOException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	public Workbook(String name) {
 		this.name = name;
@@ -55,7 +51,7 @@ public class Workbook implements Part {
 		fontManager = new FontManager();
 		styleTable = new StyleTable(this);
 		
-		sheets = new LinkedList<>();
+		sheets = new ArrayList<>();
 		appProps = new AppProperties();
 		coreProps = new CoreProperties();
 		
@@ -65,7 +61,10 @@ public class Workbook implements Part {
 		Color tc = new Color(102, 153, 153, 255);
 		Font tf = fontManager.getFont(fontManager.createFont("DengXian", 12, true, new Color(0, 0, 0, 255)));
 		
+		Color stc = new Color(244, 104, 66, 255);
+		
 		this.titleStyle = new Style(tf, new Fill(tc));
+		this.subTotalStyle = new Style(tf, new Fill(stc));
 	}
 	
 	public Worksheet getWorksheet(String worksheetName) {
@@ -119,8 +118,8 @@ public class Workbook implements Part {
 		}
 	}
 	
-	public void save(File file) {
-		Save save = new Save(file, this);
+	public void save(File file, Set<WorksheetDescriptor> worksheetDescriptors) {
+		Save save = new Save(file, this, worksheetDescriptors);
 		save(save);
 		save.close();
 	}
@@ -187,9 +186,11 @@ public class Workbook implements Part {
 		writer.writeEndDocument();
 		zos.closeEntry();
 		
+		System.out.println("Saving sheets...");
 		for (Worksheet ws : sheets) {
 			ws.save(save);
 		}
+		System.out.println("Saved sheets");
 	}
 	
 	private void saveWorkbookRelationships(Save save) throws XMLStreamException, IOException {
@@ -221,24 +222,6 @@ public class Workbook implements Part {
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		zos.closeEntry();
-	}
-	
-	public void load(File file) throws XMLStreamException, IOException {
-		Load load = new Load(file, this);
-		load(load);
-		load.close();
-	}
-	
-	public void load(Load load) throws XMLStreamException, IOException {
-		XMLStreamReader reader = load.getReader("xl/workbook.xml");
-		while (reader.hasNext()) {
-			int index = reader.next();
-			QName qname = reader.getName();
-			System.out.println("index: " + index);
-			System.out.println("prefix: " + qname.getPrefix());
-			System.out.println("localpart: " + qname.getLocalPart());
-			System.out.println("namespace: " + qname.getNamespaceURI());
-		}
 	}
 	
 }

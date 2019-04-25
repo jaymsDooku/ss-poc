@@ -16,13 +16,13 @@ public class AlphanumericSequence {
 		StringBuilder sb = new StringBuilder();
 		
 		int len = (int) (index / 26);
-		System.out.println("len: " + len);
+		//System.out.println("len: " + len);
 		
 		int[] indices = new int[len+1];
 		
 		for (int i = 0; i < indices.length; i++) {
 			int mod = index % 26;
-			System.out.println("mod" + i + ": " + mod);
+			//System.out.println("mod" + i + ": " + mod);
 			indices[i] = mod;
 			index -= 26 + mod;
 		}

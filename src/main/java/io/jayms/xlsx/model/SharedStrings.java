@@ -8,6 +8,8 @@ import java.util.zip.ZipOutputStream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import io.jayms.xlsx.model.meta.RelationshipPart;
+
 public class SharedStrings implements RelationshipPart {
 
 	private ArrayList<String> sharedStrings = new ArrayList<>();

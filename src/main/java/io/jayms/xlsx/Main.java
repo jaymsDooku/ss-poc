@@ -1,6 +1,7 @@
 package io.jayms.xlsx;
 
 import java.io.File;
+import java.util.HashSet;
 
 import io.jayms.xlsx.db.DatabaseConverter;
 import io.jayms.xlsx.db.SQLiteDatabase;
@@ -802,7 +803,7 @@ public class Main {
 		System.out.println("Connected to db.");
 		DatabaseConverter converter = new DatabaseConverter(db);
 		Worksheet ws = converter.addQueryToWorksheet(workbook, name, "select * from QUERIES");
-		workbook.save(apiExample);
+		workbook.save(apiExample, new HashSet<>());
 	}
 }
 

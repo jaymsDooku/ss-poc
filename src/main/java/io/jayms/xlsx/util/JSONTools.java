@@ -1,13 +1,18 @@
 package io.jayms.xlsx.util;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONObject;
 
 import io.jayms.xlsx.model.DoubleBandFormat;
+import io.jayms.xlsx.model.FieldConfiguration;
 import io.jayms.xlsx.model.Fill;
 import io.jayms.xlsx.model.Font;
 import io.jayms.xlsx.model.Style;
+import io.jayms.xlsx.model.WorksheetDescriptor;
+import io.jayms.xlsx.model.cells.SubTotalFunction;
 
 public final class JSONTools {
 
@@ -43,11 +48,41 @@ public final class JSONTools {
 			return obj;
 		}
 
+		public static JSONObject toJSON(WorksheetDescriptor wsDesc) {
+			JSONObject obj = new JSONObject();
+			obj.put("wsName", wsDesc.getWorksheetName());
+			
+			JSONObject fieldConfigsObj = toJSON(wsDesc.getFieldConfigs());
+			obj.put("fieldConfigs", fieldConfigsObj);
+			
+			return obj;
+		}
+		
+		public static JSONObject toJSON(Map<String, FieldConfiguration> fieldConfigs) {
+			JSONObject fieldConfigsObj = new JSONObject();
+			fieldConfigs.entrySet().forEach(e -> {
+				fieldConfigsObj.put(e.getKey(), toJSON(e.getValue()));
+			});
+			return fieldConfigsObj;
+		}
+		
+		public static JSONObject toJSON(FieldConfiguration fieldConfig) {
+			JSONObject obj = new JSONObject();
+			
+			obj.put("inline", fieldConfig.isInline());
+			obj.put("subTotalOnChange", fieldConfig.isSubTotalOnChange());
+			obj.put("subTotalFunction", fieldConfig.getSubTotalFunction().getNum());
+			obj.put("swapBandOnChange", fieldConfig.isSwapBandOnChange());
+			obj.put("colWidth", fieldConfig.getColumnWidth());
+			
+			return obj;
+		}
 	}
 	
 	public static class FromJSON {
 		
 		public static DoubleBandFormat doubleBandFormat(JSONObject json) {
+			System.out.println("json: " + json.toString());
 			JSONObject style1Obj = json.getJSONObject("style1");
 			JSONObject style2Obj = json.getJSONObject("style2");
 			Style style1 = style(style1Obj);
@@ -79,5 +114,22 @@ public final class JSONTools {
 			return new Fill(color);
 		}
 		
+		public static Map<String, FieldConfiguration> fieldConfigs(JSONObject json) {
+			Map<String, FieldConfiguration> fieldConfigs = new HashMap<>();
+			for (String fieldName : json.keySet()) {
+				fieldConfigs.put(fieldName, fieldConfig(((JSONObject) json.get(fieldName))));
+			}
+			return fieldConfigs;
+		}
+		
+		public static FieldConfiguration fieldConfig(JSONObject json) {
+			boolean inline = json.getBoolean("inline");
+			boolean subTotalOnChange = json.getBoolean("subTotalOnChange");
+			int subTotalFunctionNum = json.getInt("subTotalFunction");
+			SubTotalFunction subTotalFunction = SubTotalFunction.valueOf(subTotalFunctionNum);
+			boolean swapBandOnChange = json.getBoolean("swapBandOnChange");
+			float colWidth = json.getFloat("colWidth");
+			return new FieldConfiguration(inline, subTotalOnChange, subTotalFunction, swapBandOnChange, colWidth);
+		}
 	}
 }

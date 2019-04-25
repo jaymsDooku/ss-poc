@@ -2,10 +2,14 @@ package io.jayms.xlsx.model;
 
 import java.util.LinkedList;
 
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import io.jayms.xlsx.model.cells.FormulaCell;
+import io.jayms.xlsx.model.cells.NumberCell;
 import io.jayms.xlsx.model.cells.StringCell;
+import io.jayms.xlsx.model.cells.SubTotalCell;
+import io.jayms.xlsx.model.cells.SubTotalFunction;
+import io.jayms.xlsx.model.meta.Part;
 import io.jayms.xlsx.util.AlphanumericSequence;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +17,8 @@ import lombok.Setter;
 public class Row implements Part {
 
 	@Getter private final Worksheet worksheet;
-	private AlphanumericSequence alphaSeq;
-	private LinkedList<Cell> cells;
+	@Getter private AlphanumericSequence alphaSeq;
+	@Getter private LinkedList<Cell> cells;
 	
 	@Getter @Setter private boolean titleRow;
 	@Getter @Setter private int bandAlternateColIndex = 0;
@@ -25,8 +29,20 @@ public class Row implements Part {
 		cells = new LinkedList<>();
 	}
 	
-	public Cell<String> string(String value) {
+	public StringCell string(String value) {
 		StringCell cell = new StringCell(this, value);
+		cells.add(cell);
+		return cell;
+	}
+	
+	public NumberCell number(Number value) {
+		NumberCell cell = new NumberCell(this, value);
+		cells.add(cell);
+		return cell;
+	}
+	
+	public SubTotalCell subTotal(SubTotalFunction function, Range range, String value) {
+		SubTotalCell cell = new SubTotalCell(this, function, range, value);
 		cells.add(cell);
 		return cell;
 	}
@@ -46,46 +62,43 @@ public class Row implements Part {
 			writer.writeAttribute("ht", "12.8");
 			writer.writeAttribute("customFormat", "false");
 			
-			SharedStrings sharedStrings = worksheet.getWorkbook().getSharedStrings();
+			WorksheetDescriptor wsDesc = save.getWorksheetDescriptor(this.getWorksheet().getName());
+			Row headerRow = worksheet.getHeaderRow();
 			
-			int bandColour = save.getBandColour();
-			boolean alternateColour = false;
+			System.out.println("Saving cells...");
+			int bandColour = 3;
+			boolean inline = isTitleRow();
+			if (!inline) {
+				for (int i = 0; i < cells.size(); i++) {
+					Cell headerCell = headerRow.getCells().get(i);
+					if (!(headerCell instanceof StringCell)) {
+						continue;
+					}
+					StringCell sHeaderCell = (StringCell) headerCell;
+					String headerVal = sHeaderCell.getValue();
+					FieldConfiguration fieldConfig = wsDesc.getFieldConfigs().get(headerVal);
+					inline = fieldConfig.isInline();
+					
+					Cell c = cells.get(i);
+					Object val = c.getValue();
+					bandColour = save.getBandColour(this.worksheet.getName(), headerVal, val);
+				}
+			}
+			
 			for (int i = 0; i < cells.size(); i++) {
 				Cell c = cells.get(i);
-				if (!(c instanceof StringCell)) {
-					continue;
-				}
-				StringCell sc = (StringCell) c;
-				int v = sharedStrings.index(sc.getValue());
-				
 				writer.writeStartElement("c");
 				writer.writeAttribute("r", alphaSeq.get(i) + rowIndex);
-				writer.writeAttribute("t", "s");
-				
-				String prevValue = save.getPrevValue();
-				String val = sc.getValue();
-				save.setPrevValue(val);
-				
-				if (i == this.bandAlternateColIndex) {
-					alternateColour = prevValue != null && !prevValue.equals(val);
-				}
-				
-				writer.writeAttribute("s", Integer.toString(this.isTitleRow() ? 3 : bandColour));
-				writer.writeStartElement("v");
-				writer.writeCharacters(Integer.toString(v));
-				writer.writeEndElement();
+				writer.writeAttribute("t", inline ? "inlineStr" : c.getType());
+				writer.writeAttribute("s", Integer.toString(bandColour));
+				c.save(save, inline);
 				writer.writeEndElement();
 			}
-			
 			writer.writeEndElement();
-			
-			if (alternateColour) {
-				save.setBandColour(bandColour == 1 ? 2 : 1); //alternate band colours
-			}
-		} catch (XMLStreamException e) {
+			System.out.println("Saved cells.");
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	@Override

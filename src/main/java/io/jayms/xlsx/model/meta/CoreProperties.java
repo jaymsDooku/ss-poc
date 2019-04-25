@@ -1,4 +1,4 @@
-package io.jayms.xlsx.model;
+package io.jayms.xlsx.model.meta;
 
 import java.io.IOException;
 import java.util.Date;
@@ -7,6 +7,8 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import io.jayms.xlsx.model.Save;
 
 public class CoreProperties implements Part {
 

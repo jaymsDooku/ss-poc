@@ -5,9 +5,9 @@ import java.sql.SQLException;
 
 public class OracleDatabase extends AbstractDatabase {
 
-	public OracleDatabase(String serverName, String host, String port, String databaseName, String user,
+	public OracleDatabase(String host, String port, String databaseName, String user,
 			String pass) {
-		super(serverName, host, port, databaseName, user, pass);
+		super(null, host, port, databaseName, user, pass);
 		
 	}
 

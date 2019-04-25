@@ -3,9 +3,7 @@ package io.jayms.xlsx.db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.RowId;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import io.jayms.xlsx.model.Row;
 import io.jayms.xlsx.model.Workbook;
@@ -26,24 +24,11 @@ public class DatabaseConverter {
 			
 			ResultSetMetaData meta = rs.getMetaData();
 			
-			System.out.println(meta);
-			int columnCount = meta.getColumnCount();
-			System.out.println(columnCount);
 			Row headerRow = ws.row();
 			headerRow.setTitleRow(true);
-			DatabaseColumn[] columns = new DatabaseColumn[columnCount];
-			for (int i = 1; i <= columnCount; i++) {
-				String colName = meta.getColumnName(i);
-				String colLabel = meta.getColumnLabel(i);
-				int colType = meta.getColumnType(i);
-				String typeName = meta.getColumnTypeName(i);
-				System.out.println("Column " + i);
-				System.out.println("Column Name " + colName);
-				System.out.println("Column Label " + colLabel);
-				System.out.println("Column Type " + colType);
-				System.out.println("Column Type Name " + typeName);
-				columns[i-1] = new DatabaseColumn(i, colName, colLabel, colType);
-				
+			DatabaseColumn[] columns = DBTools.getDatabaseColumns(meta);
+			for (int i = 0; i < columns.length; i++) {
+				String colName = columns[i].getName();
 				headerRow.string(colName);
 			}
 			
@@ -51,11 +36,11 @@ public class DatabaseConverter {
 				Row row = ws.row();
 				for (int i = 0; i < columns.length; i++) {
 					DatabaseColumn col = columns[i];
-					String colName = col.getName();
 					String colLabel = col.getLabel();
 					int colType = col.getType();
-					String value;
-					System.out.println("colType: " + colType);
+					String value = "null";
+					Number numVal = 0;
+					//System.out.println("colType: " + colType);
 					switch(colType) {
 						case DatabaseColumnTypes.NVARCHAR:
 							value = rs.getNString(colLabel);
@@ -65,9 +50,11 @@ public class DatabaseConverter {
 							break;
 						case DatabaseColumnTypes.NUMBER:
 							value = Double.toString(rs.getDouble(colLabel));
+							numVal = rs.getDouble(colLabel);
 							break;
 						case DatabaseColumnTypes.INT:
 							value = Integer.toString(rs.getInt(colLabel));
+							numVal = rs.getInt(colLabel);
 							break;
 						case DatabaseColumnTypes.BOOL:
 							value = Boolean.toString(rs.getBoolean(colLabel));
@@ -81,9 +68,7 @@ public class DatabaseConverter {
 							value = rs.getString(colLabel);
 							break;
 						case DatabaseColumnTypes.ROWID:
-							System.out.println("stuck");
 							value = new String(rs.getBytes(colLabel));
-							System.out.println("passed stuck");
 							break;
 						case DatabaseColumnTypes.CLOB:
 							value = rs.getClob(colLabel).toString();
@@ -95,10 +80,13 @@ public class DatabaseConverter {
 							value = rs.getString(colLabel);
 							break;
 						default:
-							value = "null";
 							break;
 					}
-					row.string(value);
+					if (DatabaseColumnTypes.NUMBER_TYPES.contains(colType)) {
+						row.number(numVal);
+					} else {
+						row.string(value);
+					}
 				}
 			}
 		} catch (SQLException e) {
