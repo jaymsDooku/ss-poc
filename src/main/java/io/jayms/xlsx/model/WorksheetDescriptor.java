@@ -5,6 +5,9 @@ import java.util.Map;
 
 import lombok.Getter;
 
+/**
+ * Couples worksheet name with field configurations.
+ */
 public class WorksheetDescriptor {
 
 	@Getter private String worksheetName;
