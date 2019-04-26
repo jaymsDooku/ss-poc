@@ -98,7 +98,7 @@ public class DatabaseConverter {
 	
 	public Worksheet addQueryToWorksheet(Workbook wb, String worksheetName, String query) {
 		Worksheet ws = wb.hasWorksheet(worksheetName) ? wb.getWorksheet(worksheetName) : wb.createSheet(worksheetName);
-		appendQuery(ws, query);
+		ws = appendQuery(ws, query);
 		return ws;
 	}
 }

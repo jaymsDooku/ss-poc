@@ -40,16 +40,20 @@ public class Workbook implements Part {
 	@Getter private StyleTable styleTable;
 	
 	public Workbook(String name) {
+		System.out.println("t0");
 		this.name = name;
 		contentTypes = new ContentTypesManager(this);
 		styleSheet = new StyleSheet();
 		sharedStrings = new SharedStrings();
 		rsMan = new RelationshipManager(this);
+		System.out.println("t3");
 		rsMan.styleSheet(styleSheet);
 		rsMan.sharedStrings(sharedStrings);
+		System.out.println("t4");
 		
 		fontManager = new FontManager();
 		styleTable = new StyleTable(this);
+		System.out.println("t5");
 		
 		sheets = new ArrayList<>();
 		appProps = new AppProperties();
@@ -60,11 +64,12 @@ public class Workbook implements Part {
 		
 		Color tc = new Color(102, 153, 153, 255);
 		Font tf = fontManager.getFont(fontManager.createFont("DengXian", 12, true, new Color(0, 0, 0, 255)));
-		
+
 		Color stc = new Color(244, 104, 66, 255);
 		
 		this.titleStyle = new Style(tf, new Fill(tc));
 		this.subTotalStyle = new Style(tf, new Fill(stc));
+
 	}
 	
 	public Worksheet getWorksheet(String worksheetName) {
