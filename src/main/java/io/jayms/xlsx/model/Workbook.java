@@ -24,11 +24,13 @@ import lombok.Setter;
 
 public class Workbook implements Part {
 	
+	//meta object fields
 	@Getter private RelationshipManager rsMan;
 	@Getter private ContentTypesManager contentTypes;
 	@Getter private CoreProperties coreProps;
 	@Getter private AppProperties appProps;
 	
+	//fields pertaining to workbook API logic and behaviour
 	@Getter private String name;
 	@Getter private StyleSheet styleSheet;
 	@Getter private SharedStrings sharedStrings;
@@ -39,26 +41,28 @@ public class Workbook implements Part {
 	@Getter private FontManager fontManager;
 	@Getter private StyleTable styleTable;
 	
+	/**
+	 * Instantiate Workbook.
+	 * @param name - name of workbook.
+	 */
 	public Workbook(String name) {
-		System.out.println("t0");
+		//initialize fields
 		this.name = name;
 		contentTypes = new ContentTypesManager(this);
 		styleSheet = new StyleSheet();
 		sharedStrings = new SharedStrings();
-		rsMan = new RelationshipManager(this);
-		System.out.println("t3");
-		rsMan.styleSheet(styleSheet);
-		rsMan.sharedStrings(sharedStrings);
-		System.out.println("t4");
+		rsMan = new RelationshipManager();
+		rsMan.styleSheet(styleSheet); // initialize style sheet relationship part
+		rsMan.sharedStrings(sharedStrings); // initialize shared strings relationship part
 		
 		fontManager = new FontManager();
 		styleTable = new StyleTable(this);
-		System.out.println("t5");
 		
 		sheets = new ArrayList<>();
 		appProps = new AppProperties();
 		coreProps = new CoreProperties();
 		
+		//some hard-coded initialization of default styles; overidden in the DBSC front-end application.
 		this.colourFormat = new DoubleBandFormat(styleTable.getStyle(7),
 				styleTable.getStyle(21));
 		
@@ -72,10 +76,20 @@ public class Workbook implements Part {
 
 	}
 	
+	/**
+	 * Filter through worksheets and return worksheet with specified name.
+	 * @param worksheetName - name of worksheet.
+	 * @return worksheet with specified name.
+	 */
 	public Worksheet getWorksheet(String worksheetName) {
-		return sheets.stream().filter(ws -> ws.getName().equals(worksheetName)).findFirst().orElse(null);
+		return sheets.stream().filter(ws -> ws.getName().equals(worksheetName)).findFirst().orElse(null); // utilize Java Stream API and Optional API to find worksheet
 	}
 	
+	/**
+	 * Checks whether a worksheet with this name is already contained within the workbook.
+	 * @param worksheetName - name of worksheet.
+	 * @return Returns true if worksheet with this name already exists, otherwise false.
+	 */
 	public boolean hasWorksheet(String worksheetName) {
 		return sheets.stream().filter(ws -> ws.getName().equals(worksheetName)).findFirst().isPresent();
 	}
@@ -84,9 +98,14 @@ public class Workbook implements Part {
 		return Collections.unmodifiableCollection(sheets);
 	}
 	
+	/**
+	 * Create a worksheet.
+	 * @param name - name of worksheet.
+	 * @return Newly-created worksheet.
+	 */
 	public Worksheet createSheet(String name) {
-		Worksheet sheet = new Worksheet(this, name);
-		sheets.add(sheet);
+		Worksheet sheet = new Worksheet(this, name); // instantiate worksheet
+		sheets.add(sheet); // append worksheet to 'sheets' to keep track of it.
 		return sheet;
 	}
 
@@ -123,23 +142,35 @@ public class Workbook implements Part {
 		}
 	}
 	
+	/**
+	 * Save the workbook.
+	 * @param file - file to save to.
+	 * @param worksheetDescriptors - set of worksheet descriptors
+	 */
 	public void save(File file, Set<WorksheetDescriptor> worksheetDescriptors) {
 		Save save = new Save(file, this, worksheetDescriptors);
 		save(save);
 		save.close();
 	}
 	
+	/**
+	 * Handle saving of the workbook's internals.
+	 * @param save - Save visitor object.
+	 * @throws IOException
+	 * @throws XMLStreamException
+	 */
 	private void saveWorkbook(Save save) throws IOException, XMLStreamException {
 		ZipOutputStream zos = save.getZos();
 		XMLStreamWriter writer = save.getWriter();
-		zos.putNextEntry(new ZipEntry("xl/workbook.xml"));
+		zos.putNextEntry(new ZipEntry("xl/workbook.xml")); // we're writing into workbook.xml
+		//meta, deduced from reverse engineering existing spreadsheet files.
 		writer.writeStartDocument("UTF-8", "1.0");
 		writer.writeStartElement("workbook");
 		writer.writeAttribute("xmlns", "http://schemas.openxmlformats.org/officeDocument/2006/relationships", "r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 		writer.writeAttribute("xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 		
 		writer.writeStartElement("fileVersion");
-		writer.writeAttribute("appName", "Calc");
+		writer.writeAttribute("appName", "Calc"); 
 		writer.writeEndElement();
 		
 		writer.writeStartElement("workbookPr");
@@ -166,13 +197,14 @@ public class Workbook implements Part {
 		writer.writeEndElement();
 		writer.writeEndElement();
 		
+		// start writing worksheet meta
 		writer.writeStartElement("sheets");
-		for (int i = 0; i < sheets.size(); i++) {
+		for (int i = 0; i < sheets.size(); i++) { // for every worksheet
 			Worksheet ws = sheets.get(i);
-			String name = ws.getName();
-			String rId = rsMan.id(ws);
-			String sheetId = Integer.toString((i+1));
-			writer.writeStartElement("sheet");
+			String name = ws.getName(); 
+			String rId = rsMan.id(ws); // get a relationship id from the relationship manager
+			String sheetId = Integer.toString((i+1)); // sheetId from the index
+			writer.writeStartElement("sheet"); // write the worksheet
 			writer.writeAttribute("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id", rId);
 			writer.writeAttribute("sheetId", sheetId);
 			writer.writeAttribute("name", name);
@@ -180,6 +212,7 @@ public class Workbook implements Part {
 		}
 		writer.writeEndElement();
 		
+		//meta
 		writer.writeStartElement("calcPr");
 		writer.writeAttribute("iterateDelta", "0.001");
 		writer.writeAttribute("iterate", "false");
@@ -191,6 +224,7 @@ public class Workbook implements Part {
 		writer.writeEndDocument();
 		zos.closeEntry();
 		
+		//Iterate over worksheets of workbook and call upon them to save.
 		System.out.println("Saving sheets...");
 		for (Worksheet ws : sheets) {
 			ws.save(save);
@@ -198,6 +232,12 @@ public class Workbook implements Part {
 		System.out.println("Saved sheets");
 	}
 	
+	/**
+	 * Some more meta; if these relationship parts aren't written to let Excel know where everything is located, it won't work.
+	 * @param save - save visitor
+	 * @throws XMLStreamException
+	 * @throws IOException
+	 */
 	private void saveWorkbookRelationships(Save save) throws XMLStreamException, IOException {
 		ZipOutputStream zos = save.getZos();
 		XMLStreamWriter writer = save.getWriter();
