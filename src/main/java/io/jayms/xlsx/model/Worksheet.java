@@ -109,18 +109,13 @@ public class Worksheet implements RelationshipPart {
 			System.out.println("Saving columns...");
 			writer.writeStartElement("cols");
 			List<Cell> cells = headerRow.getCells();
-			System.out.println("cells: " + cells.size());
-			System.out.println("c1");
 			for (int i = 1; i < cells.size(); i++) {
 				StringCell cell = (StringCell) cells.get(i);
 				FieldConfiguration fieldConfig = fieldConfigs != null ? fieldConfigs.get(cell.getValue()) : null;
 				float width = fieldConfig != null ? fieldConfig.getColumnWidth() : DEFAULT_COL_WIDTH;
-				System.out.println("c2");
 				writer.writeStartElement("col");
 				writer.writeAttribute("width", Float.toString(width));
 				writer.writeAttribute("style", "0");
-				System.out.println("c3");
-				System.out.println("i: " + i);
 				writer.writeAttribute("min", Integer.toString(i));
 				writer.writeAttribute("max", Integer.toString(i)); // which cols to affect with this
 				writer.writeAttribute("outlineLevel", "0");

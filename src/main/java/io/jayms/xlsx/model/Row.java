@@ -67,20 +67,21 @@ public class Row implements Part {
 			
 			System.out.println("Saving cells...");
 			int bandColour = 3;
-			boolean inline = isTitleRow();
-			if (!inline) {
-				for (int i = 0; i < cells.size(); i++) {
-					Cell headerCell = headerRow.getCells().get(i);
-					if (!(headerCell instanceof StringCell)) {
-						continue;
-					}
-					StringCell sHeaderCell = (StringCell) headerCell;
-					String headerVal = sHeaderCell.getValue();
-					FieldConfiguration fieldConfig = wsDesc.getFieldConfigs().get(headerVal);
-					inline = fieldConfig.isInline();
-					
-					Cell c = cells.get(i);
-					Object val = c.getValue();
+			boolean[] isInline = new boolean[cells.size()]; // for every field, is it inline?
+			for (int i = 0; i < cells.size(); i++) {
+				Cell headerCell = headerRow.getCells().get(i);
+				if (!(headerCell instanceof StringCell)) { //only string cells in the header row
+					continue;
+				}
+				StringCell sHeaderCell = (StringCell) headerCell;
+				String headerVal = sHeaderCell.getValue();
+				FieldConfiguration fieldConfig = wsDesc.getFieldConfigs().get(headerVal); // fetch the field config using the field name
+				boolean inline = fieldConfig.isInline();
+				isInline[i] = inline;
+				
+				Cell c = cells.get(i);
+				Object val = c.getValue();
+				if (!isTitleRow()) {
 					bandColour = save.getBandColour(this.worksheet.getName(), headerVal, val);
 				}
 			}
@@ -89,9 +90,13 @@ public class Row implements Part {
 				Cell c = cells.get(i);
 				writer.writeStartElement("c");
 				writer.writeAttribute("r", alphaSeq.get(i) + rowIndex);
-				writer.writeAttribute("t", inline ? "inlineStr" : c.getType());
+				if (!isTitleRow()) {
+					writer.writeAttribute("t", isInline[i] ? "inlineStr" : c.getType());
+				} else {
+					writer.writeAttribute("t", "inlineStr");
+				}
 				writer.writeAttribute("s", Integer.toString(bandColour));
-				c.save(save, inline);
+				c.save(save, isTitleRow() ? true : isInline[i]);
 				writer.writeEndElement();
 			}
 			writer.writeEndElement();
